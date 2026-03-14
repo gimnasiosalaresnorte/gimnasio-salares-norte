@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reserva Gimnasio Salares Norte</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap');
+  :root {
+    --black:#0a0a0a; --card:#1a1a1a; --border:#2a2a2a;
+    --accent:#e8ff47; --accent2:#ff4747; --white:#f5f5f0;
+    --muted:#666; --success:#47ff8a; --gold:#f5a623; --blue:#47c5ff;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--black);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(255,255,255,.015) 40px,rgba(255,255,255,.015) 41px),repeating-linear-gradient(90deg,transparent,transparent 40px,rgba(255,255,255,.015) 40px,rgba(255,255,255,.015) 41px);pointer-events:none;z-index:0;}
+  .wrapper{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:40px 20px 80px;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* ── AUTH ── */
+  #authScreen{position:fixed;inset:0;background:var(--black);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;}
+  #authScreen.hidden{display:none;}
+  .auth-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:48px 40px;max-width:440px;width:100%;text-align:center;}
+  .auth-logo{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:32px;flex-wrap:wrap;}
+  .auth-logo img{height:28px;object-fit:contain;filter:brightness(0) invert(1);}
+  .auth-logo .sep{width:1px;height:24px;background:var(--border);}
+  .auth-logo .gym-icon{width:36px;height:36px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+  .auth-logo .gym-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;}
+  .auth-tabs{display:flex;background:var(--black);border-radius:8px;padding:4px;margin-bottom:28px;gap:4px;}
+  .auth-tab{flex:1;padding:10px;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:6px;transition:all .2s;}
+  .auth-tab.active{background:var(--card);color:var(--white);}
+  .auth-form{display:none;} .auth-form.active{display:block;}
+  .auth-field{display:flex;flex-direction:column;gap:7px;margin-bottom:16px;text-align:left;}
+  .auth-field label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:600;}
+  .auth-field input{background:var(--black);border:1.5px solid var(--border);color:var(--white);padding:12px 16px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s;width:100%;}
+  .auth-field input:focus{border-color:var(--accent);}
+  .auth-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media(max-width:480px){.auth-grid{grid-template-columns:1fr;}}
+  .auth-err{font-size:12px;color:var(--accent2);text-align:left;margin-top:-10px;margin-bottom:10px;display:none;}
+  .auth-err.show{display:block;}
+  .btn-auth{width:100%;padding:14px;border:none;border-radius:8px;background:var(--accent);color:var(--black);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s;margin-top:8px;}
+  .btn-auth:hover{background:#d4e83a;transform:translateY(-1px);}
+  .auth-divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--muted);font-size:12px;}
+  .auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+  .btn-guest{width:100%;padding:13px;border:1.5px solid var(--border);border-radius:8px;background:transparent;color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+  .btn-guest:hover{border-color:var(--white);}
+
+  /* ── HEADER ── */
+  header{text-align:center;margin-bottom:36px;}
+  .logo-bar{display:flex;align-items:center;justify-content:center;gap:20px;margin-bottom:20px;flex-wrap:wrap;}
+  .logo-icon{width:48px;height:48px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px;}
+  .logo-text{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;}
+  h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,9vw,88px);letter-spacing:4px;line-height:.9;margin-bottom:14px;}
+  h1 span{color:var(--accent);}
+  .subtitle{color:var(--muted);font-size:13px;font-weight:300;letter-spacing:2px;text-transform:uppercase;}
+
+  /* ── USER BADGE ── */
+  .user-badge{display:none;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 16px;margin-bottom:20px;align-items:center;gap:12px;font-size:13px;}
+  .user-badge.show{display:flex;}
+  .ub-avatar{width:32px;height:32px;border-radius:50%;background:var(--accent);color:var(--black);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;}
+  .ub-name{font-weight:600;} .ub-empresa{color:var(--muted);font-size:11px;}
+  .ub-logout{margin-left:auto;color:var(--muted);cursor:pointer;font-size:12px;text-decoration:underline;}
+  .ub-logout:hover{color:var(--white);}
+
+  /* ── DATE STRIP ── */
+  .date-strip{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--accent);padding:14px 20px;border-radius:6px;display:flex;align-items:center;gap:12px;margin-bottom:28px;font-size:13px;}
+  .date-strip .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0;animation:pulse 2s infinite;}
+  .date-strip strong{color:var(--accent);}
+
+  /* ── CATEGORY SELECTOR ── */
+  #categoryScreen{display:none;animation:fadeIn .4s ease;}
+  #categoryScreen.active{display:block;}
+  .cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px;}
+  @media(max-width:560px){.cat-grid{grid-template-columns:1fr;}}
+  .cat-card{border:2px solid var(--border);border-radius:14px;padding:32px 24px;cursor:pointer;transition:all .28s;text-align:center;position:relative;overflow:hidden;}
+  .cat-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .3s;}
+  .cat-card.gym::before{background:radial-gradient(circle at 50% 0%,rgba(232,255,71,.08),transparent 70%);}
+  .cat-card.games::before{background:radial-gradient(circle at 50% 0%,rgba(71,197,255,.08),transparent 70%);}
+  .cat-card:hover{transform:translateY(-4px);}
+  .cat-card.gym:hover{border-color:var(--accent);}
+  .cat-card.gym:hover::before{opacity:1;}
+  .cat-card.games:hover{border-color:var(--blue);}
+  .cat-card.games:hover::before{opacity:1;}
+  .cat-icon{font-size:48px;margin-bottom:16px;display:block;}
+  .cat-name{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;margin-bottom:8px;}
+  .cat-card.gym .cat-name{color:var(--accent);}
+  .cat-card.games .cat-name{color:var(--blue);}
+  .cat-desc{color:var(--muted);font-size:13px;line-height:1.5;}
+  .cat-badge{display:inline-block;margin-top:12px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;}
+  .cat-card.gym .cat-badge{background:rgba(232,255,71,.12);color:var(--accent);}
+  .cat-card.games .cat-badge{background:rgba(71,197,255,.12);color:var(--blue);}
+
+  /* ── STEPS ── */
+  .steps{display:flex;gap:8px;margin-bottom:36px;align-items:center;}
+  .step{display:flex;align-items:center;gap:8px;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:500;transition:color .3s;}
+  .step.active{color:var(--white);} .step.done{color:var(--accent);}
+  .step-num{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;transition:all .3s;flex-shrink:0;}
+  .step.active .step-num{border-color:var(--accent);color:var(--accent);}
+  .step.done .step-num{background:var(--accent);border-color:var(--accent);color:var(--black);}
+  .step-divider{flex:1;height:1px;background:var(--border);}
+
+  /* ── PANELS ── */
+  .panel{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:36px;margin-bottom:20px;display:none;animation:fadeIn .4s ease;}
+  .panel.active{display:block;}
+  .panel-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:24px;display:flex;align-items:center;gap:12px;}
+  .panel-title::before{content:'';width:4px;height:28px;background:var(--accent);border-radius:2px;display:block;}
+  .panel-title.blue-bar::before{background:var(--blue);}
+
+  /* ── DATE CARD ── */
+  .date-options{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:20px;}
+  .date-card{border:2px solid var(--border);border-radius:10px;padding:20px;cursor:pointer;transition:all .25s;text-align:center;position:relative;overflow:hidden;}
+  .date-card:hover{border-color:var(--accent);transform:translateY(-2px);}
+  .date-card.selected{border-color:var(--accent);background:rgba(232,255,71,.05);}
+  .date-card.selected::after{content:'✓';position:absolute;top:8px;right:12px;color:var(--accent);font-weight:700;font-size:14px;}
+  .date-card .day-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+  .date-card .day-name{font-family:'Bebas Neue',sans-serif;font-size:32px;}
+  .date-card .day-date{font-size:13px;color:var(--muted);margin-top:4px;}
+
+  /* ── HORARIOS GRID ── */
+  .horarios-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  @media(max-width:600px){.horarios-grid{grid-template-columns:repeat(2,1fr);}}
+  .horario-card{border:2px solid var(--border);border-radius:8px;padding:16px 12px;cursor:pointer;transition:all .25s;text-align:center;position:relative;}
+  .horario-card:not(.lleno):hover{border-color:var(--accent);background:rgba(232,255,71,.04);}
+  .horario-card.selected{border-color:var(--accent);background:rgba(232,255,71,.08);}
+  .horario-card.lleno{border-color:var(--accent2);opacity:.5;cursor:not-allowed;}
+  .horario-card .hora{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;}
+  .horario-card .cupos-bar{height:4px;background:var(--border);border-radius:2px;margin:8px 0 4px;overflow:hidden;}
+  .horario-card .cupos-fill{height:100%;border-radius:2px;background:var(--accent);transition:width .5s;}
+  .horario-card.lleno .cupos-fill{background:var(--accent2);}
+  .cupos-label{font-size:11px;color:var(--muted);}
+  .horario-card.selected .cupos-label{color:var(--accent);}
+  .lleno-tag{position:absolute;top:-1px;right:-1px;background:var(--accent2);color:white;font-size:9px;font-weight:700;letter-spacing:1px;padding:2px 6px;border-radius:0 7px 0 6px;text-transform:uppercase;}
+
+  /* ── GAMES ── */
+  .games-horarios-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  @media(max-width:600px){.games-horarios-grid{grid-template-columns:repeat(2,1fr);}}
+  .games-hora-card{border:2px solid var(--border);border-radius:8px;padding:14px 10px;cursor:pointer;transition:all .25s;text-align:center;position:relative;}
+  .games-hora-card:not(.lleno):hover{border-color:var(--blue);background:rgba(71,197,255,.04);}
+  .games-hora-card.selected{border-color:var(--blue);background:rgba(71,197,255,.08);}
+  .games-hora-card.lleno{opacity:.5;cursor:not-allowed;border-color:#333;}
+  .games-hora-card .hora{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;}
+
+  .mesas-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:20px;}
+  @media(max-width:560px){.mesas-grid{grid-template-columns:1fr;}}
+  .mesa-card{border:2px solid var(--border);border-radius:10px;padding:20px;cursor:pointer;transition:all .25s;position:relative;}
+  .mesa-card:hover:not(.lleno){border-color:var(--blue);background:rgba(71,197,255,.04);}
+  .mesa-card.selected{border-color:var(--blue);background:rgba(71,197,255,.08);}
+  .mesa-card.lleno{opacity:.5;cursor:not-allowed;}
+  .mesa-card .mesa-icon{font-size:28px;margin-bottom:8px;}
+  .mesa-card .mesa-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;color:var(--blue);}
+  .mesa-card .mesa-cupos{font-size:12px;color:var(--muted);margin-top:4px;}
+  .mesa-card .cupos-bar{height:3px;background:var(--border);border-radius:2px;margin-top:8px;overflow:hidden;}
+  .mesa-card .cupos-fill{height:100%;border-radius:2px;background:var(--blue);transition:width .5s;}
+  .mesa-card.lleno .cupos-fill{background:var(--accent2);}
+  .mesa-card.selected .mesa-cupos{color:var(--blue);}
+  .mesa-lleno-tag{position:absolute;top:-1px;right:-1px;background:var(--accent2);color:white;font-size:9px;font-weight:700;letter-spacing:1px;padding:2px 6px;border-radius:0 9px 0 6px;text-transform:uppercase;}
+
+  /* ── FORM ── */
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  @media(max-width:560px){.form-grid{grid-template-columns:1fr;}}
+  .field{display:flex;flex-direction:column;gap:8px;}
+  .field label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:600;}
+  .field input{background:var(--black);border:1.5px solid var(--border);color:var(--white);padding:13px 16px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:15px;outline:none;transition:border-color .2s;width:100%;}
+  .field input:focus{border-color:var(--accent);}
+  .field .err-msg{font-size:12px;color:var(--accent2);display:none;}
+  .field.has-error .err-msg{display:block;}
+
+  /* ── SUMMARY ── */
+  .summary-box{background:var(--black);border:1px solid var(--border);border-radius:10px;padding:24px;margin-bottom:28px;}
+  .summary-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;}
+  .summary-row:last-child{border-bottom:none;padding-bottom:0;}
+  .summary-row .key{color:var(--muted);}
+  .summary-row .val{font-weight:600;}
+  .summary-row .val.highlight{color:var(--accent);font-family:'Bebas Neue';font-size:20px;letter-spacing:1px;}
+  .summary-row .val.highlight-blue{color:var(--blue);font-family:'Bebas Neue';font-size:20px;letter-spacing:1px;}
+
+  /* ── BUTTONS ── */
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border:none;transition:all .2s;}
+  .btn-primary{background:var(--accent);color:var(--black);}
+  .btn-primary:hover{background:#d4e83a;transform:translateY(-1px);}
+  .btn-blue{background:var(--blue);color:var(--black);}
+  .btn-blue:hover{background:#2eb5f0;transform:translateY(-1px);}
+  .btn-ghost{background:transparent;color:var(--white);border:1.5px solid var(--border);}
+  .btn-ghost:hover{border-color:var(--white);}
+  .btn-row{display:flex;gap:12px;justify-content:flex-end;margin-top:28px;flex-wrap:wrap;}
+
+  /* ── SUCCESS ── */
+  .success-panel{text-align:center;padding:50px 36px;}
+  .success-icon{width:80px;height:80px;background:var(--success);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:36px;}
+  .success-title{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:3px;color:var(--success);margin-bottom:10px;}
+  .success-sub{color:var(--muted);font-size:15px;margin-bottom:28px;line-height:1.6;}
+  .ticket{background:var(--black);border:2px dashed var(--border);border-radius:12px;padding:24px;max-width:420px;margin:0 auto 28px;text-align:left;}
+  .ticket-row{display:flex;justify-content:space-between;padding:8px 0;font-size:13px;border-bottom:1px dashed var(--border);}
+  .ticket-row:last-child{border-bottom:none;}
+  .ticket-row .k{color:var(--muted);} .ticket-row .v{font-weight:600;}
+  .download-area{background:rgba(232,255,71,.06);border:1px solid rgba(232,255,71,.2);border-radius:10px;padding:18px 22px;display:flex;align-items:center;gap:14px;margin-top:16px;cursor:pointer;transition:all .2s;}
+  .download-area:hover{background:rgba(232,255,71,.1);}
+  .dl-icon{font-size:26px;flex-shrink:0;}
+  .dl-text .dl-title{font-weight:600;font-size:14px;color:var(--accent);}
+  .dl-text .dl-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+
+  .notice{background:rgba(255,71,71,.08);border:1px solid rgba(255,71,71,.25);border-radius:8px;padding:14px 18px;font-size:13px;color:#ff8080;margin-bottom:20px;display:none;align-items:flex-start;gap:10px;}
+  .notice.show{display:flex;}
+  footer{text-align:center;margin-top:60px;color:var(--muted);font-size:12px;letter-spacing:1px;}
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="authScreen">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <img src="https://companieslogo.com/img/orig/GFI_BIG.D-c252f3e3.png?t=1744188008" alt="Gold Fields" onerror="this.style.display='none'">
+      <div class="sep"></div>
+      <div class="gym-icon">💪</div>
+      <div class="gym-name">SALARES NORTE</div>
+      <div class="sep"></div>
+      <img src="https://www.newrest.eu/wp-content/uploads/2022/09/Logo-Newrest-White.png" alt="Newrest" onerror="this.style.display='none'">
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchTab('login')">Iniciar sesión</button>
+      <button class="auth-tab" onclick="switchTab('register')">Registrarse</button>
+    </div>
+    <div class="auth-form active" id="formLogin">
+      <div class="auth-field"><label>Usuario (RUT)</label><input type="text" id="login-rut" placeholder="12.345.678-9" oninput="formatRutInput(this)"></div>
+      <div class="auth-field"><label>Contraseña</label><input type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <div class="auth-err" id="login-err">Usuario o contraseña incorrectos.</div>
+      <button class="btn-auth" onclick="doLogin()">Ingresar →</button>
+      <div class="auth-divider">o continúa sin cuenta</div>
+      <button class="btn-guest" onclick="enterAsGuest()">Ingresar como invitado</button>
+    </div>
+    <div class="auth-form" id="formRegister">
+      <div class="auth-grid">
+        <div class="auth-field"><label>Nombre</label><input type="text" id="reg-nombre" placeholder="Juan"></div>
+        <div class="auth-field"><label>Apellido</label><input type="text" id="reg-apellido" placeholder="González"></div>
+      </div>
+      <div class="auth-field"><label>RUT (será tu usuario)</label><input type="text" id="reg-rut" placeholder="12.345.678-9" oninput="formatRutInput(this)"></div>
+      <div class="auth-field"><label>Empresa</label><input type="text" id="reg-empresa" placeholder="Nombre de tu empresa"></div>
+      <div class="auth-field"><label>Contraseña</label><input type="password" id="reg-pass" placeholder="Mínimo 6 caracteres"></div>
+      <div class="auth-field"><label>Confirmar contraseña</label><input type="password" id="reg-pass2" placeholder="Repite tu contraseña" onkeydown="if(event.key==='Enter')doRegister()"></div>
+      <div class="auth-err" id="reg-err">Error al registrarse.</div>
+      <button class="btn-auth" onclick="doRegister()">Crear cuenta →</button>
+      <div class="auth-divider">o continúa sin cuenta</div>
+      <button class="btn-guest" onclick="enterAsGuest()">Ingresar como invitado</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="wrapper">
+  <header>
+    <div class="logo-bar">
+      <img src="https://companieslogo.com/img/orig/GFI_BIG.D-c252f3e3.png?t=1744188008" alt="Gold Fields" style="height:34px;object-fit:contain;filter:brightness(0) invert(1);" onerror="this.style.display='none'">
+      <div style="width:1px;height:30px;background:#2a2a2a;"></div>
+      <div style="display:flex;align-items:center;gap:10px;"><div class="logo-icon">💪</div><div class="logo-text">SALARES NORTE</div></div>
+      <div style="width:1px;height:30px;background:#2a2a2a;"></div>
+      <img src="https://www.newrest.eu/wp-content/uploads/2022/09/Logo-Newrest-White.png" alt="Newrest" style="height:28px;object-fit:contain;" onerror="this.style.display='none'">
+    </div>
+    <h1>RESERVA<br><span>TU HORA</span></h1>
+    <p class="subtitle">Gimnasio Salares Norte · Sistema de agendamiento · Cupos limitados</p>
+  </header>
+
+  <div class="user-badge" id="userBadge">
+    <div class="ub-avatar" id="ubAvatar">?</div>
+    <div><div class="ub-name" id="ubName">–</div><div class="ub-empresa" id="ubEmpresa">–</div></div>
+    <span class="ub-logout" onclick="doLogout()">Cerrar sesión</span>
+  </div>
+
+  <div class="date-strip">
+    <div class="dot"></div>
+    <div id="dateStripText">Cargando fecha...</div>
+  </div>
+
+  <!-- CATEGORY SCREEN -->
+  <div id="categoryScreen">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;margin-bottom:20px;display:flex;align-items:center;gap:10px;">
+      <span style="width:4px;height:22px;background:var(--accent);border-radius:2px;display:inline-block;"></span>
+      ¿Qué deseas reservar?
+    </div>
+    <div class="cat-grid">
+      <div class="cat-card gym" onclick="selectCategory('gym')">
+        <span class="cat-icon">🏋️</span>
+        <div class="cat-name">Gimnasio</div>
+        <div class="cat-desc">Acceso a sala de ejercicios con equipamiento completo</div>
+        <span class="cat-badge">05:00 – 23:00</span>
+      </div>
+      <div class="cat-card games" onclick="selectCategory('games')">
+        <span class="cat-icon">🎮</span>
+        <div class="cat-name">Juegos</div>
+        <div class="cat-desc">Pool · Ping-Pong · Arcade · Taca-Taca</div>
+        <span class="cat-badge" style="background:rgba(71,197,255,.12);color:var(--blue);">20:00 – 23:00</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ GYM FLOW ══ -->
+  <div id="gymFlow" style="display:none;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+      <button onclick="backToCategory()" style="background:transparent;border:1.5px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:6px;cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif;letter-spacing:1px;">← Categorías</button>
+      <span style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--accent);">🏋️ GIMNASIO</span>
+    </div>
+    <div class="steps">
+      <div class="step active" id="gstep1"><div class="step-num">1</div><span>Fecha</span></div>
+      <div class="step-divider"></div>
+      <div class="step" id="gstep2"><div class="step-num">2</div><span>Horario</span></div>
+      <div class="step-divider"></div>
+      <div class="step" id="gstep3"><div class="step-num">3</div><span>Datos</span></div>
+      <div class="step-divider"></div>
+      <div class="step" id="gstep4"><div class="step-num">4</div><span>Confirmar</span></div>
+    </div>
+    <div class="panel active" id="gpanel1">
+      <div class="panel-title">Selecciona la fecha</div>
+      <div class="date-options" id="gdateOptions"></div>
+      <div class="notice" id="gnoDateNotice"><span>⚠️</span><span>Debes seleccionar una fecha.</span></div>
+      <div class="btn-row"><button class="btn btn-primary" onclick="gymGoToStep2()">Siguiente →</button></div>
+    </div>
+    <div class="panel" id="gpanel2">
+      <div class="panel-title">Elige tu horario</div>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:20px;">Máximo <strong style="color:var(--white)">32 personas</strong> por bloque. Horarios en rojo están llenos.</p>
+      <div class="horarios-grid" id="gymHorariosGrid"></div>
+      <div class="notice" id="gnoHorarioNotice"><span>⚠️</span><span>Debes seleccionar un horario.</span></div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="gymGoTo(1)">← Volver</button>
+        <button class="btn btn-primary" onclick="gymGoToStep3()">Siguiente →</button>
+      </div>
+    </div>
+    <div class="panel" id="gpanel3">
+      <div class="panel-title">Tus datos</div>
+      <div id="guestNoticeGym" style="display:none;background:rgba(232,255,71,.06);border:1px solid rgba(232,255,71,.2);border-radius:8px;padding:12px 16px;font-size:13px;color:var(--accent);margin-bottom:20px;">💡 Ingresando como invitado. <span style="color:var(--muted)">Tus datos no se guardarán.</span></div>
+      <div class="form-grid">
+        <div class="field" id="gf-nombre"><label>Nombre</label><input type="text" id="ginp-nombre" placeholder="Juan" oninput="clearErr('gf-nombre')"><span class="err-msg">Campo obligatorio</span></div>
+        <div class="field" id="gf-apellido"><label>Apellido</label><input type="text" id="ginp-apellido" placeholder="González" oninput="clearErr('gf-apellido')"><span class="err-msg">Campo obligatorio</span></div>
+        <div class="field" id="gf-rut"><label>RUT</label><input type="text" id="ginp-rut" placeholder="12.345.678-9" oninput="formatRut(this);clearErr('gf-rut')"><span class="err-msg" id="grut-err">RUT inválido</span></div>
+        <div class="field" id="gf-empresa"><label>Empresa</label><input type="text" id="ginp-empresa" placeholder="Empresa" oninput="clearErr('gf-empresa')"><span class="err-msg">Campo obligatorio</span></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="gymGoTo(2)">← Volver</button>
+        <button class="btn btn-primary" onclick="gymGoToStep4()">Revisar →</button>
+      </div>
+    </div>
+    <div class="panel" id="gpanel4">
+      <div class="panel-title">Confirma tu reserva</div>
+      <div class="summary-box" id="gsummaryBox"></div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="gymGoTo(3)">← Editar</button>
+        <button class="btn btn-primary" onclick="gymConfirmar()">✓ Confirmar reserva</button>
+      </div>
+    </div>
+    <div class="panel" id="gpanel5">
+      <div class="success-panel">
+        <div class="success-icon">✓</div>
+        <div class="success-title">¡RESERVADO!</div>
+        <p class="success-sub">Tu cupo en el gimnasio ha sido registrado.</p>
+        <div class="ticket" id="gticketBox"></div>
+        <div class="download-area" onclick="downloadExcel()">
+          <div class="dl-icon">📊</div>
+          <div class="dl-text"><div class="dl-title">Descargar registro Excel</div><div class="dl-sub">Solo administradores — requiere PIN</div></div>
+          <div style="margin-left:auto;color:var(--accent);font-size:20px;">↓</div>
+        </div>
+        <div class="btn-row" style="justify-content:center;margin-top:24px;">
+          <button class="btn btn-ghost" onclick="backToCategory()">← Volver a categorías</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ GAMES FLOW ══ -->
+  <div id="gamesFlow" style="display:none;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+      <button onclick="backToCategory()" style="background:transparent;border:1.5px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:6px;cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif;letter-spacing:1px;">← Categorías</button>
+      <span style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--blue);">🎮 JUEGOS</span>
+    </div>
+    <div class="steps">
+      <div class="step active" id="jstep1"><div class="step-num">1</div><span>Fecha</span></div>
+      <div class="step-divider"></div>
+      <div class="step" id="jstep2"><div class="step-num">2</div><span>Horario</span></div>
+      <div class="step-divider"></div>
+      <div class="step" id="jstep3"><div class="step-num">3</div><span>Mesa</span></div>
+      <div class="step-divider"></div>
+      <div class="step" id="jstep4"><div class="step-num">4</div><span>Datos</span></div>
+      <div class="step-divider"></div>
+      <div class="step" id="jstep5"><div class="step-num">5</div><span>Confirmar</span></div>
+    </div>
+    <div class="panel active" id="jpanel1">
+      <div class="panel-title blue-bar">Selecciona la fecha</div>
+      <div class="date-options" id="jdateOptions"></div>
+      <div class="notice" id="jnoDateNotice"><span>⚠️</span><span>Debes seleccionar una fecha.</span></div>
+      <div class="btn-row"><button class="btn btn-blue" onclick="jGoToStep2()">Siguiente →</button></div>
+    </div>
+    <div class="panel" id="jpanel2">
+      <div class="panel-title blue-bar">Elige el horario</div>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:20px;">Disponible desde las <strong style="color:var(--white)">20:00</strong> hasta las <strong style="color:var(--white)">23:00</strong>.</p>
+      <div class="games-horarios-grid" id="jHorariosGrid"></div>
+      <div class="notice" id="jnoHorarioNotice"><span>⚠️</span><span>Debes seleccionar un horario.</span></div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="jGoTo(1)">← Volver</button>
+        <button class="btn btn-blue" onclick="jGoToStep3()">Siguiente →</button>
+      </div>
+    </div>
+    <div class="panel" id="jpanel3">
+      <div class="panel-title blue-bar">Elige tu mesa</div>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:4px;">Selecciona el tipo de juego para el horario <strong id="jHoraLabel" style="color:var(--white)">–</strong></p>
+      <div class="mesas-grid" id="jMesasGrid"></div>
+      <div class="notice" id="jnoMesaNotice"><span>⚠️</span><span>Debes seleccionar una mesa.</span></div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="jGoTo(2)">← Volver</button>
+        <button class="btn btn-blue" onclick="jGoToStep4()">Siguiente →</button>
+      </div>
+    </div>
+    <div class="panel" id="jpanel4">
+      <div class="panel-title blue-bar">Tus datos</div>
+      <div id="guestNoticeGames" style="display:none;background:rgba(71,197,255,.06);border:1px solid rgba(71,197,255,.2);border-radius:8px;padding:12px 16px;font-size:13px;color:var(--blue);margin-bottom:20px;">💡 Ingresando como invitado.</div>
+      <div class="form-grid">
+        <div class="field" id="jf-nombre"><label>Nombre</label><input type="text" id="jinp-nombre" placeholder="Juan" oninput="clearErr('jf-nombre')"><span class="err-msg">Campo obligatorio</span></div>
+        <div class="field" id="jf-apellido"><label>Apellido</label><input type="text" id="jinp-apellido" placeholder="González" oninput="clearErr('jf-apellido')"><span class="err-msg">Campo obligatorio</span></div>
+        <div class="field" id="jf-rut"><label>RUT</label><input type="text" id="jinp-rut" placeholder="12.345.678-9" oninput="formatRut(this);clearErr('jf-rut')"><span class="err-msg" id="jrut-err">RUT inválido</span></div>
+        <div class="field" id="jf-empresa"><label>Empresa</label><input type="text" id="jinp-empresa" placeholder="Empresa" oninput="clearErr('jf-empresa')"><span class="err-msg">Campo obligatorio</span></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="jGoTo(3)">← Volver</button>
+        <button class="btn btn-blue" onclick="jGoToStep5()">Revisar →</button>
+      </div>
+    </div>
+    <div class="panel" id="jpanel5">
+      <div class="panel-title blue-bar">Confirma tu reserva</div>
+      <div class="summary-box" id="jsummaryBox"></div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="jGoTo(4)">← Editar</button>
+        <button class="btn btn-blue" onclick="jConfirmar()">✓ Confirmar reserva</button>
+      </div>
+    </div>
+    <div class="panel" id="jpanel6">
+      <div class="success-panel">
+        <div class="success-icon" style="background:var(--blue);">✓</div>
+        <div class="success-title" style="color:var(--blue);">¡RESERVADO!</div>
+        <p class="success-sub">Tu mesa ha sido reservada exitosamente.</p>
+        <div class="ticket" id="jticketBox"></div>
+        <div class="download-area" onclick="downloadExcel()">
+          <div class="dl-icon">📊</div>
+          <div class="dl-text"><div class="dl-title">Descargar registro Excel</div><div class="dl-sub">Solo administradores — requiere PIN</div></div>
+          <div style="margin-left:auto;color:var(--accent);font-size:20px;">↓</div>
+        </div>
+        <div class="btn-row" style="justify-content:center;margin-top:24px;">
+          <button class="btn btn-ghost" onclick="backToCategory()">← Volver a categorías</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<footer>GIMNASIO SALARES NORTE · Sistema de reservas · Máximo 32 personas por bloque</footer>
+
+<!-- LOADING -->
+<div id="loadingOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+  <div style="text-align:center;"><div style="width:48px;height:48px;border:3px solid #2a2a2a;border-top-color:#e8ff47;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;"></div><div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:#e8ff47;">CARGANDO...</div></div>
+</div>
+
+<!-- DUPLICADO MODAL -->
+<div id="dupModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:999;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+  <div style="background:#1a1a1a;border:1px solid #ff4747;border-radius:16px;padding:40px 36px;max-width:400px;width:90%;text-align:center;animation:fadeIn .3s ease;">
+    <div style="font-size:40px;margin-bottom:12px;">🚫</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;margin-bottom:12px;color:#ff6b6b;">RESERVA DUPLICADA</div>
+    <p id="dupMsg" style="color:#aaa;font-size:14px;line-height:1.7;margin-bottom:28px;"></p>
+    <p style="color:#666;font-size:12px;margin-bottom:24px;">Solo se permite <strong style="color:#f5f5f0;">una reserva por día</strong> por persona.</p>
+    <button onclick="document.getElementById('dupModal').style.display='none'" style="padding:12px 32px;border-radius:8px;border:none;background:#e8ff47;color:#0a0a0a;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Entendido</button>
+  </div>
+</div>
+
+<!-- PIN MODAL -->
+<div id="pinModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:999;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+  <div style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:16px;padding:40px 36px;max-width:360px;width:90%;text-align:center;animation:fadeIn .3s ease;">
+    <div style="font-size:36px;margin-bottom:12px;">🔐</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:8px;">ACCESO ADMIN</div>
+    <p style="color:#666;font-size:13px;margin-bottom:28px;">Ingresa el PIN de 4 dígitos</p>
+    <div style="display:flex;gap:12px;justify-content:center;margin-bottom:16px;">
+      <input class="pin-digit" maxlength="1" type="password" inputmode="numeric" style="width:56px;height:64px;text-align:center;font-size:28px;font-weight:700;background:#0a0a0a;border:2px solid #2a2a2a;border-radius:10px;color:#f5f5f0;outline:none;" oninput="this.value=this.value.replace(/[^0-9]/g,'');if(this.value)this.nextElementSibling&&this.nextElementSibling.focus();" onkeydown="if(event.key==='Backspace'&&!this.value)this.previousElementSibling&&this.previousElementSibling.focus();">
+      <input class="pin-digit" maxlength="1" type="password" inputmode="numeric" style="width:56px;height:64px;text-align:center;font-size:28px;font-weight:700;background:#0a0a0a;border:2px solid #2a2a2a;border-radius:10px;color:#f5f5f0;outline:none;" oninput="this.value=this.value.replace(/[^0-9]/g,'');if(this.value)this.nextElementSibling&&this.nextElementSibling.focus();" onkeydown="if(event.key==='Backspace'&&!this.value)this.previousElementSibling&&this.previousElementSibling.focus();">
+      <input class="pin-digit" maxlength="1" type="password" inputmode="numeric" style="width:56px;height:64px;text-align:center;font-size:28px;font-weight:700;background:#0a0a0a;border:2px solid #2a2a2a;border-radius:10px;color:#f5f5f0;outline:none;" oninput="this.value=this.value.replace(/[^0-9]/g,'');if(this.value)this.nextElementSibling&&this.nextElementSibling.focus();" onkeydown="if(event.key==='Backspace'&&!this.value)this.previousElementSibling&&this.previousElementSibling.focus();">
+      <input class="pin-digit" maxlength="1" type="password" inputmode="numeric" style="width:56px;height:64px;text-align:center;font-size:28px;font-weight:700;background:#0a0a0a;border:2px solid #2a2a2a;border-radius:10px;color:#f5f5f0;outline:none;" oninput="this.value=this.value.replace(/[^0-9]/g,'');if(this.value){checkPin();}" onkeydown="if(event.key==='Backspace'&&!this.value)this.previousElementSibling&&this.previousElementSibling.focus();">
+    </div>
+    <div id="pinError" style="display:none;color:#ff6b6b;font-size:13px;margin-bottom:16px;">PIN incorrecto.</div>
+    <div style="display:flex;gap:10px;justify-content:center;">
+      <button onclick="document.getElementById('pinModal').style.display='none'" style="padding:11px 22px;border-radius:8px;border:1.5px solid #2a2a2a;background:transparent;color:#f5f5f0;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Cancelar</button>
+      <button onclick="checkPin()" style="padding:11px 22px;border-radius:8px;border:none;background:#e8ff47;color:#0a0a0a;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════
+//  CONFIG
+// ════════════════════════════════════════
+const SCRIPT_URL      = 'https://script.google.com/macros/s/AKfycbzTK1G6a9u9DKPUDv02OHn3cIh9ih5yOMEGaj1EXF1Vg8pCbkb_2f-qw_tsY-bBwhMO/exec';
+const MAX_CUPOS       = 32;
+const EMPRESA_EXCL    = 'GoldFields';
+const MAX_EXCL        = 16;
+const ADMIN_PIN       = '1799';
+const HORARIO_EXCL_GOLD = '05:00';
+const GYM_HORARIOS    = ['05:00','06:00','07:00','08:00','09:00','10:00','11:00','12:00',
+                         '13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00'];
+const GAMES_HORARIOS  = ['20:00','21:00','22:00'];
+const MESAS = [
+  { id:'pool',     nombre:'Pool',      icon:'🎱', cupos:5 },
+  { id:'pingpong', nombre:'Ping-Pong', icon:'🏓', cupos:2 },
+  { id:'arcade',   nombre:'Arcade',    icon:'🕹️', cupos:3 },
+  { id:'tacataca', nombre:'Taca-Taca', icon:'⚽', cupos:2 }
+];
+const USERS_KEY   = 'gym_users_v1';
+const SESSION_KEY = 'gym_session_v1';
+
+// ════════════════════════════════════════
+//  USER STORE
+// ════════════════════════════════════════
+function getUsers(){try{return JSON.parse(localStorage.getItem(USERS_KEY))||{};}catch(e){return{};}}
+function saveUsers(u){localStorage.setItem(USERS_KEY,JSON.stringify(u));}
+function getSession(){try{return JSON.parse(localStorage.getItem(SESSION_KEY))||null;}catch(e){return null;}}
+function saveSession(s){localStorage.setItem(SESSION_KEY,JSON.stringify(s));}
+function clearSession(){localStorage.removeItem(SESSION_KEY);}
+
+let currentUser = null;
+
+function switchTab(tab){
+  document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',(i===0&&tab==='login')||(i===1&&tab==='register')));
+  document.getElementById('formLogin').classList.toggle('active',tab==='login');
+  document.getElementById('formRegister').classList.toggle('active',tab==='register');
+  document.getElementById('login-err').classList.remove('show');
+  document.getElementById('reg-err').classList.remove('show');
+}
+function doLogin(){
+  const rut=document.getElementById('login-rut').value.trim();
+  const pass=document.getElementById('login-pass').value;
+  const users=getUsers();
+  const rutKey=rut.replace(/\./g,'').replace(/-/g,'').toLowerCase();
+  const user=users[rutKey];
+  if(!user||user.pass!==btoa(pass)){document.getElementById('login-err').classList.add('show');return;}
+  currentUser={nombre:user.nombre,apellido:user.apellido,rut:user.rut,empresa:user.empresa};
+  saveSession(currentUser); enterApp();
+}
+function doRegister(){
+  const nombre=document.getElementById('reg-nombre').value.trim();
+  const apellido=document.getElementById('reg-apellido').value.trim();
+  const rut=document.getElementById('reg-rut').value.trim();
+  const empresa=document.getElementById('reg-empresa').value.trim();
+  const pass=document.getElementById('reg-pass').value;
+  const pass2=document.getElementById('reg-pass2').value;
+  const errEl=document.getElementById('reg-err');
+  if(!nombre||!apellido||!rut||!empresa||!pass){errEl.textContent='Todos los campos son obligatorios.';errEl.classList.add('show');return;}
+  if(!validarRut(rut)){errEl.textContent='RUT inválido.';errEl.classList.add('show');return;}
+  if(pass.length<6){errEl.textContent='Contraseña mínimo 6 caracteres.';errEl.classList.add('show');return;}
+  if(pass!==pass2){errEl.textContent='Las contraseñas no coinciden.';errEl.classList.add('show');return;}
+  const users=getUsers();
+  const rutKey=rut.replace(/\./g,'').replace(/-/g,'').toLowerCase();
+  if(users[rutKey]){errEl.textContent='Este RUT ya tiene una cuenta.';errEl.classList.add('show');return;}
+  users[rutKey]={nombre,apellido,rut,empresa,pass:btoa(pass)};
+  saveUsers(users); errEl.classList.remove('show');
+  currentUser={nombre,apellido,rut,empresa}; saveSession(currentUser); enterApp();
+}
+function enterAsGuest(){currentUser=null;clearSession();enterApp();}
+function enterApp(){
+  document.getElementById('authScreen').classList.add('hidden');
+  updateUserBadge(); prefillForms();
+  showCategoryScreen();
+}
+function doLogout(){
+  currentUser=null;clearSession();
+  document.getElementById('userBadge').classList.remove('show');
+  document.getElementById('authScreen').classList.remove('hidden');
+  document.getElementById('login-rut').value='';
+  document.getElementById('login-pass').value='';
+  switchTab('login');
+}
+function updateUserBadge(){
+  const badge=document.getElementById('userBadge');
+  if(currentUser){
+    document.getElementById('ubAvatar').textContent=currentUser.nombre.charAt(0).toUpperCase();
+    document.getElementById('ubName').textContent=`${currentUser.nombre} ${currentUser.apellido}`;
+    document.getElementById('ubEmpresa').textContent=currentUser.empresa;
+    badge.classList.add('show');
+  } else { badge.classList.remove('show'); }
+}
+function prefillForms(){
+  const fields=[['ginp-nombre','jinp-nombre'],['ginp-apellido','jinp-apellido'],['ginp-rut','jinp-rut'],['ginp-empresa','jinp-empresa']];
+  const vals=currentUser?[currentUser.nombre,currentUser.apellido,currentUser.rut,currentUser.empresa]:['','','',''];
+  fields.forEach((ids,i)=>ids.forEach(id=>{ const el=document.getElementById(id); if(el) el.value=vals[i]; }));
+  document.getElementById('guestNoticeGym').style.display=currentUser?'none':'block';
+  document.getElementById('guestNoticeGames').style.display=currentUser?'none':'block';
+}
+
+// ════════════════════════════════════════
+//  CATEGORY NAV
+// ════════════════════════════════════════
+function showCategoryScreen(){
+  document.getElementById('categoryScreen').classList.add('active');
+  document.getElementById('gymFlow').style.display='none';
+  document.getElementById('gamesFlow').style.display='none';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function backToCategory(){
+  gSelectedDate=null; gSelectedHora=null;
+  jSelectedDate=null; jSelectedHora=null; jSelectedMesa=null;
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('gpanel1').classList.add('active');
+  document.getElementById('jpanel1').classList.add('active');
+  showCategoryScreen();
+}
+function selectCategory(cat){
+  document.getElementById('categoryScreen').classList.remove('active');
+  if(cat==='gym'){
+    document.getElementById('gymFlow').style.display='block';
+    initGymDates();
+  } else {
+    document.getElementById('gamesFlow').style.display='block';
+    initGamesDates();
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ════════════════════════════════════════
+//  DATES UTIL
+// ════════════════════════════════════════
+let today;
+const diasES=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+const mesesES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+function formatDateKey(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function formatDateDisplay(d){return `${d.getDate()} de ${mesesES[d.getMonth()]} ${d.getFullYear()}`;}
+function nextHour(h){return String((parseInt(h)+1)%24).padStart(2,'0')+':00';}
+
+function initDates(){
+  today=new Date(); today.setHours(0,0,0,0);
+  document.getElementById('dateStripText').innerHTML=`Hoy es <strong>${diasES[today.getDay()]}, ${formatDateDisplay(today)}</strong> &nbsp;·&nbsp; Puedes agendar solo para mañana`;
+}
+function makeDateCard(containerId, onSelect){
+  const container=document.getElementById(containerId);
+  container.innerHTML='';
+  const dNext=new Date(today); dNext.setDate(dNext.getDate()+1);
+  const key=formatDateKey(dNext);
+  const card=document.createElement('div');
+  card.className='date-card'; card.dataset.date=key;
+  card.innerHTML=`<div class="day-label">Mañana</div><div class="day-name">${diasES[dNext.getDay()]}</div><div class="day-date">${formatDateDisplay(dNext)}</div>`;
+  card.onclick=()=>{ document.querySelectorAll(`#${containerId} .date-card`).forEach(c=>c.classList.remove('selected')); card.classList.add('selected'); onSelect(key); };
+  container.appendChild(card);
+}
+
+// ════════════════════════════════════════
+//  CACHE / API
+// ════════════════════════════════════════
+let _cache={};
+async function loadCache(date,type){
+  try{
+    showLoading(true);
+    const res=await fetch(`${SCRIPT_URL}?action=getReservas&date=${date}&type=${type}`);
+    const json=await res.json();
+    if(!_cache[type]) _cache[type]={};
+    _cache[type][date]=json.data||{};
+  }catch(e){ if(!_cache[type])_cache[type]={}; _cache[type][date]={}; }
+  finally{showLoading(false);}
+}
+async function postReserva(type,date,hora,extra,persona){
+  const res=await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({action:'addReserva',type,date,hora,extra,persona})});
+  const json=await res.json();
+  if(json.data){if(!_cache[type])_cache[type]={};_cache[type][date]=json.data;}
+  return json;
+}
+async function fetchAll(){
+  const res=await fetch(`${SCRIPT_URL}?action=getAllReservas`);
+  const json=await res.json();
+  return json.data||{};
+}
+
+// GYM cache helpers
+function gymGetReservas(date){return(_cache.gym&&_cache.gym[date])||{};}
+function gymCuposUsados(date,hora){const dr=gymGetReservas(date);return dr[hora]?dr[hora].length:0;}
+function isEmpresaExcl(emp){return emp.trim().toLowerCase()===EMPRESA_EXCL.toLowerCase();}
+function gymCuposEmp(date,hora){const dr=gymGetReservas(date);return dr[hora]?dr[hora].filter(p=>isEmpresaExcl(p.empresa)).length:0;}
+function gymCuposGen(date,hora){const dr=gymGetReservas(date);return dr[hora]?dr[hora].filter(p=>!isEmpresaExcl(p.empresa)).length:0;}
+function horaConExcl(hora){return parseInt(hora)>=19;}
+function gymCupoDisponible(date,hora,empresa){
+  if(gymCuposUsados(date,hora)>=MAX_CUPOS) return false;
+  if(hora===HORARIO_EXCL_GOLD&&!isEmpresaExcl(empresa)) return false;
+  if(isEmpresaExcl(empresa)) return true;
+  if(horaConExcl(hora)) return gymCuposGen(date,hora)<(MAX_CUPOS-MAX_EXCL);
+  return gymCuposUsados(date,hora)<MAX_CUPOS;
+}
+function gymYaDuplicado(date,nombre,apellido,rut){
+  const rutC=rut.replace(/\./g,'').replace(/-/g,'').toLowerCase();
+  const nomC=(nombre+' '+apellido).toLowerCase().trim();
+  const dr=gymGetReservas(date);
+  for(const h in dr) for(const p of dr[h]){
+    if(p.rut.replace(/\./g,'').replace(/-/g,'').toLowerCase()===rutC) return{tipo:'RUT',hora:h};
+    if((p.nombre+' '+p.apellido).toLowerCase().trim()===nomC) return{tipo:'nombre',hora:h};
+  }
+  return null;
+}
+
+// GAMES cache helpers
+function jGetReservas(date,mesa){const dr=(_cache.games&&_cache.games[date])||{};return(dr[mesa]&&dr[mesa])||{};}
+function jCuposUsadosMesa(date,hora,mesa){const dr=jGetReservas(date,mesa);return dr[hora]?dr[hora].length:0;}
+function jCupoDisponible(date,hora,mesa){const m=MESAS.find(x=>x.id===mesa);return jCuposUsadosMesa(date,hora,mesa)<(m?m.cupos:0);}
+function jYaDuplicado(date,nombre,apellido,rut,mesa){
+  const rutC=rut.replace(/\./g,'').replace(/-/g,'').toLowerCase();
+  const nomC=(nombre+' '+apellido).toLowerCase().trim();
+  const dr=jGetReservas(date,mesa);
+  for(const h in dr) for(const p of dr[h]){
+    if(p.rut.replace(/\./g,'').replace(/-/g,'').toLowerCase()===rutC) return{tipo:'RUT',hora:h};
+    if((p.nombre+' '+p.apellido).toLowerCase().trim()===nomC) return{tipo:'nombre',hora:h};
+  }
+  return null;
+}
+
+// ════════════════════════════════════════
+//  GYM FLOW
+// ════════════════════════════════════════
+let gSelectedDate=null, gSelectedHora=null;
+
+function initGymDates(){
+  makeDateCard('gdateOptions',date=>{ gSelectedDate=date; document.getElementById('gnoDateNotice').classList.remove('show'); });
+}
+function gymGoTo(n){
+  document.querySelectorAll('#gymFlow .panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('gpanel'+n).classList.add('active');
+  for(let i=1;i<=4;i++){const s=document.getElementById('gstep'+i);if(s){s.classList.remove('active','done');if(i<n)s.classList.add('done');else if(i===n)s.classList.add('active');}}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+async function gymGoToStep2(){
+  if(!gSelectedDate){document.getElementById('gnoDateNotice').classList.add('show');return;}
+  await loadCache(gSelectedDate,'gym');
+  renderGymHorarios(); gymGoTo(2);
+}
+function gymGoToStep3(){
+  if(!gSelectedHora){document.getElementById('gnoHorarioNotice').classList.add('show');return;}
+  prefillForms(); gymGoTo(3);
+}
+function gymGoToStep4(){
+  if(!gymValidateForm()) return;
+  const dup=gymYaDuplicado(gSelectedDate,document.getElementById('ginp-nombre').value.trim(),document.getElementById('ginp-apellido').value.trim(),document.getElementById('ginp-rut').value.trim());
+  if(dup){showDupModal(dup.tipo,dup.hora);return;}
+  renderGymSummary(); gymGoTo(4);
+}
+function renderGymHorarios(){
+  const grid=document.getElementById('gymHorariosGrid'); grid.innerHTML='';
+  GYM_HORARIOS.forEach(h=>{
+    const usado=gymCuposUsados(gSelectedDate,h);
+    const pct=Math.min((usado/MAX_CUPOS)*100,100);
+    const barColor=pct>=100?'#ff4747':pct>=75?'#ffaa47':'#e8ff47';
+    const esExcGold=h===HORARIO_EXCL_GOLD;
+    const bloqueado=esExcGold&&!isEmpresaExcl(currentUser?.empresa||'');
+    const tieneExcl=horaConExcl(h);
+    const cuposLibres=tieneExcl?Math.max(0,(MAX_CUPOS-MAX_EXCL)-gymCuposGen(gSelectedDate,h)):Math.max(0,MAX_CUPOS-usado);
+    const llenoPorTipo=tieneExcl?gymCuposGen(gSelectedDate,h)>=(MAX_CUPOS-MAX_EXCL):usado>=MAX_CUPOS;
+    const mostrarLleno=llenoPorTipo&&!isEmpresaExcl(currentUser?.empresa||'');
+    const card=document.createElement('div');
+    card.className='horario-card'+((mostrarLleno||bloqueado)?' lleno':'');
+    card.innerHTML=`${mostrarLleno?'<span class="lleno-tag">Lleno</span>':bloqueado?'<span class="lleno-tag" style="background:#e8a847;">GoldFields</span>':''}<div class="hora">${h} – ${nextHour(h)}</div><div class="cupos-bar"><div class="cupos-fill" style="width:${pct}%;background:${barColor}"></div></div><div class="cupos-label">${mostrarLleno?'Sin cupos':bloqueado?'Exclusivo GoldFields':cuposLibres+' cupos disponibles'}</div>`;
+    if(!mostrarLleno&&!bloqueado) card.onclick=()=>{ gSelectedHora=h; document.querySelectorAll('#gymHorariosGrid .horario-card').forEach(c=>c.classList.remove('selected')); card.classList.add('selected'); document.getElementById('gnoHorarioNotice').classList.remove('show'); };
+    grid.appendChild(card);
+  });
+}
+function gymValidateForm(){
+  let ok=true;
+  if(!document.getElementById('ginp-nombre').value.trim()){document.getElementById('gf-nombre').classList.add('has-error');ok=false;}
+  if(!document.getElementById('ginp-apellido').value.trim()){document.getElementById('gf-apellido').classList.add('has-error');ok=false;}
+  if(!document.getElementById('ginp-empresa').value.trim()){document.getElementById('gf-empresa').classList.add('has-error');ok=false;}
+  const rut=document.getElementById('ginp-rut').value.trim();
+  if(!validarRut(rut)){document.getElementById('gf-rut').classList.add('has-error');document.getElementById('grut-err').textContent=rut?'RUT inválido':'Campo obligatorio';ok=false;}
+  return ok;
+}
+function renderGymSummary(){
+  const d=new Date(gSelectedDate+'T12:00:00');
+  document.getElementById('gsummaryBox').innerHTML=`
+    <div class="summary-row"><span class="key">Categoría</span><span class="val">🏋️ Gimnasio</span></div>
+    <div class="summary-row"><span class="key">Fecha</span><span class="val">${diasES[d.getDay()]}, ${formatDateDisplay(d)}</span></div>
+    <div class="summary-row"><span class="key">Horario</span><span class="val highlight">${gSelectedHora} — ${nextHour(gSelectedHora)}</span></div>
+    <div class="summary-row"><span class="key">Nombre</span><span class="val">${document.getElementById('ginp-nombre').value.trim()} ${document.getElementById('ginp-apellido').value.trim()}</span></div>
+    <div class="summary-row"><span class="key">RUT</span><span class="val">${document.getElementById('ginp-rut').value.trim()}</span></div>
+    <div class="summary-row"><span class="key">Empresa</span><span class="val">${document.getElementById('ginp-empresa').value.trim()}</span></div>`;
+}
+async function gymConfirmar(){
+  const persona={nombre:document.getElementById('ginp-nombre').value.trim(),apellido:document.getElementById('ginp-apellido').value.trim(),rut:document.getElementById('ginp-rut').value.trim(),empresa:document.getElementById('ginp-empresa').value.trim(),timestamp:new Date().toISOString()};
+  const dup=gymYaDuplicado(gSelectedDate,persona.nombre,persona.apellido,persona.rut);
+  if(dup){showDupModal(dup.tipo,dup.hora);return;}
+  if(!gymCupoDisponible(gSelectedDate,gSelectedHora,persona.empresa)){alert('⚠️ Sin cupos disponibles en este horario.');gymGoTo(2);renderGymHorarios();return;}
+  try{
+    showLoading(true);
+    await loadCache(gSelectedDate,'gym');
+    const dup2=gymYaDuplicado(gSelectedDate,persona.nombre,persona.apellido,persona.rut);
+    if(dup2){showLoading(false);showDupModal(dup2.tipo,dup2.hora);return;}
+    if(!gymCupoDisponible(gSelectedDate,gSelectedHora,persona.empresa)){showLoading(false);alert('⚠️ Horario lleno.');gymGoTo(2);renderGymHorarios();return;}
+    await postReserva('gym',gSelectedDate,gSelectedHora,null,persona);
+  }catch(e){showLoading(false);alert('⚠️ Error al guardar. Verifica tu conexión.');return;}
+  showLoading(false);
+  const d=new Date(gSelectedDate+'T12:00:00');
+  document.getElementById('gticketBox').innerHTML=`
+    <div class="ticket-row"><span class="k">N° Reserva</span><span class="v" style="color:var(--accent);font-family:'Bebas Neue';font-size:18px;">#${Math.floor(Math.random()*90000)+10000}</span></div>
+    <div class="ticket-row"><span class="k">Categoría</span><span class="v">🏋️ Gimnasio</span></div>
+    <div class="ticket-row"><span class="k">Nombre</span><span class="v">${persona.nombre} ${persona.apellido}</span></div>
+    <div class="ticket-row"><span class="k">RUT</span><span class="v">${persona.rut}</span></div>
+    <div class="ticket-row"><span class="k">Fecha</span><span class="v">${diasES[d.getDay()]} ${formatDateDisplay(d)}</span></div>
+    <div class="ticket-row"><span class="k">Horario</span><span class="v">${gSelectedHora} – ${nextHour(gSelectedHora)}</span></div>`;
+  document.querySelectorAll('#gymFlow .panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('gpanel5').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ════════════════════════════════════════
+//  GAMES FLOW
+// ════════════════════════════════════════
+let jSelectedDate=null, jSelectedHora=null, jSelectedMesa=null;
+
+function initGamesDates(){
+  makeDateCard('jdateOptions',date=>{ jSelectedDate=date; document.getElementById('jnoDateNotice').classList.remove('show'); });
+}
+function jGoTo(n){
+  document.querySelectorAll('#gamesFlow .panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('jpanel'+n).classList.add('active');
+  for(let i=1;i<=5;i++){const s=document.getElementById('jstep'+i);if(s){s.classList.remove('active','done');if(i<n)s.classList.add('done');else if(i===n)s.classList.add('active');}}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+async function jGoToStep2(){
+  if(!jSelectedDate){document.getElementById('jnoDateNotice').classList.add('show');return;}
+  await loadCache(jSelectedDate,'games');
+  renderJHorarios(); jGoTo(2);
+}
+function jGoToStep3(){
+  if(!jSelectedHora){document.getElementById('jnoHorarioNotice').classList.add('show');return;}
+  document.getElementById('jHoraLabel').textContent=`${jSelectedHora} – ${nextHour(jSelectedHora)}`;
+  renderMesas(); jGoTo(3);
+}
+function jGoToStep4(){
+  if(!jSelectedMesa){document.getElementById('jnoMesaNotice').classList.add('show');return;}
+  prefillForms(); jGoTo(4);
+}
+function jGoToStep5(){
+  if(!jValidateForm()) return;
+  const dup=jYaDuplicado(jSelectedDate,document.getElementById('jinp-nombre').value.trim(),document.getElementById('jinp-apellido').value.trim(),document.getElementById('jinp-rut').value.trim(),jSelectedMesa);
+  if(dup){showDupModal(dup.tipo,dup.hora);return;}
+  renderJSummary(); jGoTo(5);
+}
+function renderJHorarios(){
+  const grid=document.getElementById('jHorariosGrid'); grid.innerHTML='';
+  GAMES_HORARIOS.forEach(h=>{
+    // check if any mesa has space
+    const anySpace=MESAS.some(m=>jCupoDisponible(jSelectedDate,h,m.id));
+    const card=document.createElement('div');
+    card.className='games-hora-card'+(!anySpace?' lleno':'');
+    const total=MESAS.reduce((s,m)=>s+jCuposUsadosMesa(jSelectedDate,h,m.id),0);
+    const maxTotal=MESAS.reduce((s,m)=>s+m.cupos,0);
+    const pct=Math.min((total/maxTotal)*100,100);
+    card.innerHTML=`<div class="hora">${h} – ${nextHour(h)}</div><div class="cupos-bar" style="height:3px;background:#2a2a2a;border-radius:2px;margin-top:8px;overflow:hidden;"><div style="width:${pct}%;height:100%;background:${pct>=100?'#ff4747':'#47c5ff'};border-radius:2px;"></div></div><div style="font-size:11px;color:var(--muted);margin-top:4px;">${anySpace?'Mesas disponibles':'Sin cupos'}</div>`;
+    if(anySpace) card.onclick=()=>{ jSelectedHora=h; document.querySelectorAll('.games-hora-card').forEach(c=>c.classList.remove('selected')); card.classList.add('selected'); document.getElementById('jnoHorarioNotice').classList.remove('show'); };
+    grid.appendChild(card);
+  });
+}
+function renderMesas(){
+  const grid=document.getElementById('jMesasGrid'); grid.innerHTML='';
+  MESAS.forEach(m=>{
+    const usado=jCuposUsadosMesa(jSelectedDate,jSelectedHora,m.id);
+    const libre=m.cupos-usado;
+    const lleno=libre<=0;
+    const pct=Math.min((usado/m.cupos)*100,100);
+    const card=document.createElement('div');
+    card.className='mesa-card'+(lleno?' lleno':'');
+    card.innerHTML=`${lleno?'<span class="mesa-lleno-tag">Lleno</span>':''}<div class="mesa-icon">${m.icon}</div><div class="mesa-name">${m.nombre}</div><div class="mesa-cupos">${lleno?'Sin cupos':libre+' de '+m.cupos+' disponibles'}</div><div class="cupos-bar"><div class="cupos-fill" style="width:${pct}%;background:${lleno?'#ff4747':'#47c5ff'}"></div></div>`;
+    if(!lleno) card.onclick=()=>{ jSelectedMesa=m.id; document.querySelectorAll('.mesa-card').forEach(c=>c.classList.remove('selected')); card.classList.add('selected'); document.getElementById('jnoMesaNotice').classList.remove('show'); };
+    grid.appendChild(card);
+  });
+}
+function jValidateForm(){
+  let ok=true;
+  if(!document.getElementById('jinp-nombre').value.trim()){document.getElementById('jf-nombre').classList.add('has-error');ok=false;}
+  if(!document.getElementById('jinp-apellido').value.trim()){document.getElementById('jf-apellido').classList.add('has-error');ok=false;}
+  if(!document.getElementById('jinp-empresa').value.trim()){document.getElementById('jf-empresa').classList.add('has-error');ok=false;}
+  const rut=document.getElementById('jinp-rut').value.trim();
+  if(!validarRut(rut)){document.getElementById('jf-rut').classList.add('has-error');document.getElementById('jrut-err').textContent=rut?'RUT inválido':'Campo obligatorio';ok=false;}
+  return ok;
+}
+function renderJSummary(){
+  const d=new Date(jSelectedDate+'T12:00:00');
+  const mesa=MESAS.find(m=>m.id===jSelectedMesa);
+  document.getElementById('jsummaryBox').innerHTML=`
+    <div class="summary-row"><span class="key">Categoría</span><span class="val">🎮 Juegos</span></div>
+    <div class="summary-row"><span class="key">Fecha</span><span class="val">${diasES[d.getDay()]}, ${formatDateDisplay(d)}</span></div>
+    <div class="summary-row"><span class="key">Horario</span><span class="val highlight-blue">${jSelectedHora} — ${nextHour(jSelectedHora)}</span></div>
+    <div class="summary-row"><span class="key">Mesa</span><span class="val">${mesa.icon} ${mesa.nombre}</span></div>
+    <div class="summary-row"><span class="key">Nombre</span><span class="val">${document.getElementById('jinp-nombre').value.trim()} ${document.getElementById('jinp-apellido').value.trim()}</span></div>
+    <div class="summary-row"><span class="key">RUT</span><span class="val">${document.getElementById('jinp-rut').value.trim()}</span></div>
+    <div class="summary-row"><span class="key">Empresa</span><span class="val">${document.getElementById('jinp-empresa').value.trim()}</span></div>`;
+}
+async function jConfirmar(){
+  const persona={nombre:document.getElementById('jinp-nombre').value.trim(),apellido:document.getElementById('jinp-apellido').value.trim(),rut:document.getElementById('jinp-rut').value.trim(),empresa:document.getElementById('jinp-empresa').value.trim(),timestamp:new Date().toISOString()};
+  const dup=jYaDuplicado(jSelectedDate,persona.nombre,persona.apellido,persona.rut,jSelectedMesa);
+  if(dup){showDupModal(dup.tipo,dup.hora);return;}
+  if(!jCupoDisponible(jSelectedDate,jSelectedHora,jSelectedMesa)){alert('⚠️ Sin cupos en esta mesa.');jGoTo(3);renderMesas();return;}
+  try{
+    showLoading(true);
+    await loadCache(jSelectedDate,'games');
+    const dup2=jYaDuplicado(jSelectedDate,persona.nombre,persona.apellido,persona.rut,jSelectedMesa);
+    if(dup2){showLoading(false);showDupModal(dup2.tipo,dup2.hora);return;}
+    if(!jCupoDisponible(jSelectedDate,jSelectedHora,jSelectedMesa)){showLoading(false);alert('⚠️ Mesa llena.');jGoTo(3);renderMesas();return;}
+    await postReserva('games',jSelectedDate,jSelectedHora,jSelectedMesa,persona);
+  }catch(e){showLoading(false);alert('⚠️ Error al guardar. Verifica tu conexión.');return;}
+  showLoading(false);
+  const d=new Date(jSelectedDate+'T12:00:00');
+  const mesa=MESAS.find(m=>m.id===jSelectedMesa);
+  document.getElementById('jticketBox').innerHTML=`
+    <div class="ticket-row"><span class="k">N° Reserva</span><span class="v" style="color:var(--blue);font-family:'Bebas Neue';font-size:18px;">#${Math.floor(Math.random()*90000)+10000}</span></div>
+    <div class="ticket-row"><span class="k">Categoría</span><span class="v">🎮 Juegos</span></div>
+    <div class="ticket-row"><span class="k">Mesa</span><span class="v">${mesa.icon} ${mesa.nombre}</span></div>
+    <div class="ticket-row"><span class="k">Nombre</span><span class="v">${persona.nombre} ${persona.apellido}</span></div>
+    <div class="ticket-row"><span class="k">RUT</span><span class="v">${persona.rut}</span></div>
+    <div class="ticket-row"><span class="k">Fecha</span><span class="v">${diasES[d.getDay()]} ${formatDateDisplay(d)}</span></div>
+    <div class="ticket-row"><span class="k">Horario</span><span class="v">${jSelectedHora} – ${nextHour(jSelectedHora)}</span></div>`;
+  document.querySelectorAll('#gamesFlow .panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('jpanel6').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ════════════════════════════════════════
+//  FORM HELPERS
+// ════════════════════════════════════════
+function clearErr(id){document.getElementById(id).classList.remove('has-error');}
+function formatRut(input){
+  let v=input.value.replace(/[^0-9kK]/g,'').toUpperCase();
+  if(v.length<=1){input.value=v;return;}
+  const dv=v.slice(-1); let num=v.slice(0,-1);
+  num=num.replace(/\B(?=(\d{3})+(?!\d))/g,'.'); input.value=num+'-'+dv;
+}
+function formatRutInput(input){formatRut(input);}
+function validarRut(rut){
+  if(!rut) return false;
+  const clean=rut.replace(/\./g,'').replace(/-/g,'').toUpperCase();
+  if(clean.length<2) return false;
+  const dv=clean.slice(-1), num=clean.slice(0,-1);
+  if(!/^[0-9]+$/.test(num)) return false;
+  let suma=0,mult=2;
+  for(let i=num.length-1;i>=0;i--){suma+=parseInt(num[i])*mult;mult=mult===7?2:mult+1;}
+  const resto=11-(suma%11);
+  return dv===(resto===11?'0':resto===10?'K':String(resto));
+}
+
+// ════════════════════════════════════════
+//  DOWNLOAD (PIN)
+// ════════════════════════════════════════
+function downloadExcel(){
+  document.getElementById('pinModal').style.display='flex';
+  document.getElementById('pinError').style.display='none';
+  document.querySelectorAll('.pin-digit').forEach(i=>i.value='');
+  setTimeout(()=>document.querySelector('.pin-digit').focus(),100);
+}
+function checkPin(){
+  const digits=[...document.querySelectorAll('.pin-digit')].map(i=>i.value).join('');
+  if(digits===ADMIN_PIN){document.getElementById('pinModal').style.display='none';doDownloadExcel();}
+  else{document.getElementById('pinError').style.display='block';document.querySelectorAll('.pin-digit').forEach(i=>i.value='');document.querySelector('.pin-digit').focus();}
+}
+async function doDownloadExcel(){
+  showLoading(true);
+  let data={};
+  try{const json=await fetchAll();data=json;}
+  catch(e){showLoading(false);alert('Error al obtener datos.');return;}
+  showLoading(false);
+
+  let rows=[['GIMNASIO SALARES NORTE - REGISTRO COMPLETO'],['Generado:',new Date().toLocaleString('es-CL')],[],
+    ['=== GIMNASIO ==='],['FECHA','HORARIO','N°','TIPO','NOMBRE','APELLIDO','RUT','EMPRESA','TIMESTAMP']];
+  if(data.gym) Object.keys(data.gym).sort().forEach(date=>{
+    const dObj=new Date(date+'T12:00:00');
+    const ds=`${diasES[dObj.getDay()]} ${formatDateDisplay(dObj)}`;
+    Object.keys(data.gym[date]).sort().forEach(hora=>{
+      data.gym[date][hora].forEach((p,i)=>rows.push([ds,`${hora}-${nextHour(hora)}`,i+1,isEmpresaExcl(p.empresa)?EMPRESA_EXCL:'General',p.nombre,p.apellido,p.rut,p.empresa,p.timestamp]));
+    });
+  });
+  rows.push([],['=== JUEGOS ==='],['FECHA','HORARIO','MESA','N°','NOMBRE','APELLIDO','RUT','EMPRESA','TIMESTAMP']);
+  if(data.games) Object.keys(data.games).sort().forEach(date=>{
+    const dObj=new Date(date+'T12:00:00');
+    const ds=`${diasES[dObj.getDay()]} ${formatDateDisplay(dObj)}`;
+    Object.keys(data.games[date]).sort().forEach(mesa=>{
+      const mesaObj=MESAS.find(m=>m.id===mesa);
+      Object.keys(data.games[date][mesa]).sort().forEach(hora=>{
+        data.games[date][mesa][hora].forEach((p,i)=>rows.push([ds,`${hora}-${nextHour(hora)}`,mesaObj?mesaObj.nombre:mesa,i+1,p.nombre,p.apellido,p.rut,p.empresa,p.timestamp]));
+      });
+    });
+  });
+  const BOM='\uFEFF';
+  const csv=BOM+rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\r\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url;
+  a.download=`salares_norte_reservas_${formatDateKey(today).replace(/-/g,'')}.csv`;
+  a.click(); URL.revokeObjectURL(url);
+}
+
+// ════════════════════════════════════════
+//  HELPERS
+// ════════════════════════════════════════
+function showLoading(v){document.getElementById('loadingOverlay').style.display=v?'flex':'none';}
+function showDupModal(tipo,hora){
+  document.getElementById('dupMsg').innerHTML=tipo==='RUT'?`El <strong>RUT ingresado</strong> ya tiene una reserva en el horario <strong>${hora} – ${nextHour(hora)}</strong>.`:`El <strong>nombre ingresado</strong> ya tiene una reserva en el horario <strong>${hora} – ${nextHour(hora)}</strong>.`;
+  document.getElementById('dupModal').style.display='flex';
+}
+
+// ════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════
+function init(){
+  initDates();
+  const session=getSession();
+  if(session){currentUser=session;enterApp();}
+}
+init();
+</script>
+</body>
+</html>
